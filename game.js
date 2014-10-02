@@ -70,9 +70,21 @@ function centerText(context, text, offsetX, offsetY) {
 // 		item.y + item.height <= container.y + container.height;
 // }
 
+var chasmColliders = [
+	//new Splat.Entity(x, y, width, height), //left conveyor
+	new Splat.Entity(631, 16, 184, 158),
+	new Splat.Entity(753, 0, 101, 16),
+	new Splat.Entity(598, 133, 157, 265),
+	new Splat.Entity(427, 437, 325, 202),
+	new Splat.Entity(451, 292, 277, 145),
+	new Splat.Entity(561, 133, 37, 159)
+];
+
+
+
 game.scenes.add("title", new Splat.Scene(canvas, function() {
 	// initialization
-	this.timers.expire = new Splat.Timer(undefined, 5, function() {
+	this.timers.expire = new Splat.Timer(undefined, 4000, function() {
 		game.scenes.switchTo("game");
 	});
 	this.timers.expire.start();
@@ -85,7 +97,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
 	context.fillStyle = "#fff";
 	context.font = "25px helvetica";
-	centerText(context, "#6HourGameJam", 0, canvas.height / 2 - 13);
+	centerText(context, "#6HourGameJam", 0, 200);
+
+	context.font = "20px helvetica";
+	centerText(context, "Alex Bezuska - TwoScoopGames.com", 0, 300);
 }));
 
 
@@ -94,14 +109,14 @@ game.scenes.add("game", new Splat.Scene(canvas, function() {
 
 		//player 1
 		this.playerIdle = game.animations.get("ice-idle");
-		this.player = new Splat.AnimatedEntity((bounds.right / 2) - (this.playerIdle.width / 2), 25, this.playerIdle.width, this.playerIdle.height, this.playerIdle, 0, 0);
+		this.player = new Splat.AnimatedEntity(10, 10, this.playerIdle.width, this.playerIdle.height, this.playerIdle, 0, 0);
 		this.player.state = "ice";
 
 		//player 2
 
 		this.player2IdleHot = game.animations.get("fire-idle");
 		this.player2IdleCold = game.animations.get("cold-ball-idle");
-		this.player2 = new Splat.AnimatedEntity((bounds.right / 2) - (this.player2IdleHot.width / 2), 25, this.player2IdleHot.width, this.player2IdleHot.height, this.player2IdleHot, 0, 0);
+		this.player2 = new Splat.AnimatedEntity(100, 100, this.player2IdleHot.width, this.player2IdleHot.height, this.player2IdleHot, 0, 0);
 
 
 
@@ -226,6 +241,25 @@ game.scenes.add("game", new Splat.Scene(canvas, function() {
 			this.player.y = bounds.bottom - this.player.height;
 		}
 
+		//chasm
+		if (this.player.state !== "steam") {
+			for (var i = 0; i < chasmColliders.length; i++) {
+				var playerLeft = this.player.x;
+				var playerRight = this.player.x + this.player.width;
+				// var playerTop = this.player.y;
+				// var playerBottom = this.player.y + this.player.height;
+				if (this.player.collides(chasmColliders[i])) {
+					if (playerRight > chasmColliders[i].x) {
+						this.player.x = this.player.x - 5;
+					}
+					if (playerLeft > (chasmColliders[i].X + chasmColliders[i].width)) {
+						this.player.x = (this.player.x + this.player.width) - 5;
+					}
+
+				}
+			}
+		}
+
 
 	},
 	function(context) {
@@ -234,8 +268,14 @@ game.scenes.add("game", new Splat.Scene(canvas, function() {
 		context.fillRect(0, 0, canvas.width, canvas.height);
 		context.drawImage(game.images.get("bg"), 0, 0);
 
-		this.player.draw(context);
 		this.player2.draw(context);
+		this.player.draw(context);
+
+		// context.strokeStyle = "white";
+		// for (var i = 0; i < chasmColliders.length; i++) {
+		// 	context.strokeRect(chasmColliders[i].x, chasmColliders[i].y, chasmColliders[i].width, chasmColliders[i].height);
+		// }
+
 
 	}));
 
