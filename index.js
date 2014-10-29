@@ -98,10 +98,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
 	context.fillStyle = "#fff";
 	context.font = "25px helvetica";
-	centerText(context, "#6HourGameJam", 0, 200);
+	centerText(context, "loading", 0, 200);
 
-	context.font = "20px helvetica";
-	centerText(context, "Alex Bezuska - TwoScoopGames.com", 0, 300);
 }));
 
 
